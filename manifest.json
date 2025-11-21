@@ -1,0 +1,30 @@
+{
+  "name": "herusphere",
+  "short_name": "herusphere",
+  "description": "Jeong Hyemin Portfolio - Multi Persona Universe",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["portfolio", "art", "design"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Create",
+      "short_name": "Create",
+      "description": "Create new content",
+      "url": "/?action=create",
+      "icons": [{ "src": "logo.svg", "sizes": "any" }]
+    }
+  ]
+}
+

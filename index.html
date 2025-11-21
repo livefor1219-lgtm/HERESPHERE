@@ -2,8 +2,13 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="herusphere" />
+  <meta name="theme-color" content="#000000" />
   <title>herusphere – Jeong Hyemin Portfolio</title>
+  <link rel="manifest" href="manifest.json" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -26,14 +31,29 @@
       scroll-behavior: smooth;
     }
 
-    body {
+    html, body {
       margin: 0;
-      font-family: "Pretendard", "Noto Sans KR", "Segoe UI", sans-serif;
+      padding: 0;
+      height: 100dvh;
+      height: 100vh;
+      overflow: hidden;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, #111a21, #060809);
       color: var(--text-light);
       line-height: 1.6;
-      position: relative;
-      overflow-x: hidden;
+      position: fixed;
+      width: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      letter-spacing: -0.02em;
+    }
+
+    #app-container {
+      height: 100dvh;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     /* Starfield Background */
@@ -89,12 +109,17 @@
     }
 
     header {
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
       z-index: 100;
-      background: rgba(6, 8, 9, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(6, 8, 9, 0.5);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent) 1;
+      flex-shrink: 0;
     }
 
     .nav-container {
@@ -131,20 +156,57 @@
     }
 
     main {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 3rem 2rem 5rem;
+      padding: 1rem 1.5rem;
+      padding-top: calc(60px + 1rem);
+      padding-bottom: calc(80px + 1rem);
       position: relative;
       z-index: 1;
+      width: 100%;
+    }
+
+    @supports (padding: max(0px)) {
+      main {
+        padding-left: max(1.5rem, env(safe-area-inset-left));
+        padding-right: max(1.5rem, env(safe-area-inset-right));
+      }
     }
 
     section {
-      margin-bottom: 5rem;
-      padding: 3rem;
+      margin-bottom: 2rem;
+      padding: 2rem;
       border-radius: 24px;
-      background: rgba(18, 32, 41, 0.85);
-      box-shadow: 0 20px 40px var(--card-shadow);
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(207, 52, 114, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(45, 84, 99, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    section > * {
+      position: relative;
+      z-index: 1;
     }
 
     .section-heading {
@@ -224,16 +286,19 @@
     }
 
     .persona-card {
-      background: var(--bg-panel);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-radius: 18px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       padding: 1.2rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border 0.4s ease, box-shadow 0.4s ease;
       position: relative;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
     .persona-card::before {
@@ -252,7 +317,17 @@
     .persona-card:hover {
       transform: translateY(-8px) scale(1.05) rotateY(5deg);
       border-color: var(--accent);
-      box-shadow: 0 30px 60px rgba(207, 52, 114, 0.4), 0 0 40px rgba(207, 52, 114, 0.2);
+      box-shadow: 0 30px 60px rgba(207, 52, 114, 0.4), 0 0 40px rgba(207, 52, 114, 0.2), 0 0 60px rgba(207, 52, 114, 0.1);
+      animation: neonGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes neonGlow {
+      0%, 100% {
+        box-shadow: 0 30px 60px rgba(207, 52, 114, 0.4), 0 0 40px rgba(207, 52, 114, 0.2), 0 0 60px rgba(207, 52, 114, 0.1);
+      }
+      50% {
+        box-shadow: 0 35px 70px rgba(207, 52, 114, 0.5), 0 0 50px rgba(207, 52, 114, 0.3), 0 0 80px rgba(207, 52, 114, 0.2);
+      }
     }
 
     .persona-card:hover::before {
@@ -390,10 +465,11 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(6, 8, 9, 0.98);
+      background: rgba(6, 8, 9, 0.95);
       z-index: 1000;
       overflow-y: auto;
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
       opacity: 0;
       animation: spaceTravelIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
@@ -503,15 +579,18 @@
     }
 
     .project-card {
-      background: var(--bg-panel);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-radius: 20px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
       position: relative;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
     .project-card::before {
@@ -801,22 +880,426 @@
       font-size: 1.05rem;
     }
 
+    /* Dashboard Styles */
+    .dashboard-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .greeting-card,
+    .status-card,
+    .recent-activity-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-radius: 20px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .greeting-card:hover,
+    .status-card:hover,
+    .recent-activity-card:hover {
+      border-color: rgba(207, 52, 114, 0.3);
+      box-shadow: 0 12px 40px rgba(207, 52, 114, 0.2);
+    }
+
+    .project-item,
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      margin-bottom: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .project-item:hover,
+    .activity-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(4px);
+    }
+
+    .project-icon,
+    .activity-icon {
+      font-size: 1.5rem;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: rgba(207, 52, 114, 0.1);
+    }
+
+    .project-summary,
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Persona Chat Modal */
+    .persona-chat-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(6, 8, 9, 0.98);
+      z-index: 2000;
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+    }
+
+    .persona-chat-modal.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-back,
+    .chat-menu {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .chat-back:hover,
+    .chat-menu:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-persona-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+    }
+
+    .chat-persona-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(207, 52, 114, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 2px solid rgba(207, 52, 114, 0.3);
+    }
+
+    .chat-persona-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .chat-persona-status {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .message {
+      display: flex;
+      gap: 0.75rem;
+      animation: messageSlideIn 0.3s ease;
+    }
+
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-ai {
+      justify-content: flex-start;
+    }
+
+    .message-user {
+      justify-content: flex-end;
+    }
+
+    .message-content {
+      max-width: 70%;
+      padding: 1rem 1.25rem;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .message-user .message-content {
+      background: linear-gradient(135deg, rgba(207, 52, 114, 0.2), rgba(207, 52, 114, 0.1));
+      border-color: rgba(207, 52, 114, 0.3);
+    }
+
+    .chat-input-area {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-attach,
+    .chat-send {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      padding: 0.75rem 1.25rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .chat-send {
+      background: linear-gradient(135deg, var(--accent), #ff6b9d);
+      border: none;
+      color: white;
+    }
+
+    .chat-attach:hover,
+    .chat-send:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(207, 52, 114, 0.3);
+    }
+
+    .page-content {
+      display: none;
+    }
+
+    .page-content.active {
+      display: block;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      padding-bottom: env(safe-area-inset-bottom);
+      background: rgba(6, 8, 9, 0.5);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+      text-decoration: none;
+      position: relative;
+      flex: 1;
+      max-width: 120px;
+    }
+
+    .nav-item svg {
+      margin-bottom: 0.25rem;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-item.active,
+    .nav-item:hover {
+      color: var(--accent);
+    }
+
+    .nav-item.active svg,
+    .nav-item:hover svg {
+      transform: scale(1.1);
+    }
+
+    .nav-item span {
+      font-size: 0.85rem;
+      letter-spacing: -0.01em;
+      font-weight: 500;
+    }
+
+    .nav-item-create {
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .create-button {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #ff6b9d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(207, 52, 114, 0.4), 0 0 20px rgba(207, 52, 114, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      top: -16px;
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 8px 24px rgba(207, 52, 114, 0.4), 0 0 20px rgba(207, 52, 114, 0.3);
+      }
+      50% {
+        box-shadow: 0 12px 32px rgba(207, 52, 114, 0.6), 0 0 30px rgba(207, 52, 114, 0.5);
+      }
+    }
+
+    .create-button:hover,
+    .create-button:active {
+      transform: scale(1.15);
+      box-shadow: 0 16px 40px rgba(207, 52, 114, 0.7), 0 0 40px rgba(207, 52, 114, 0.6);
+    }
+
+    .create-button svg {
+      color: white;
+      margin: 0;
+    }
+
+    .nav-item-create span {
+      position: relative;
+      top: -8px;
+    }
+
     @media (max-width: 768px) {
       header {
-        position: static;
+        position: fixed;
       }
 
       nav ul {
         gap: 1rem;
-        font-size: 0.9rem;
+        font-size: 1rem;
       }
 
       section {
-        padding: 2rem;
+        padding: 1.5rem;
+      }
+
+      .persona-card {
+        padding: 1.5rem;
+        min-height: 200px;
       }
 
       .persona-card img {
-        height: 160px;
+        height: 180px;
+      }
+
+      .persona-card h3 {
+        font-size: 1.2rem;
+      }
+
+      .persona-card p {
+        font-size: 1rem;
+      }
+
+      .section-heading {
+        font-size: 1.8rem;
+      }
+
+      .section-sub {
+        font-size: 1.05rem;
+      }
+
+      .nav-item {
+        padding: 0.75rem 1rem;
+        min-height: 60px;
+      }
+
+      .nav-item svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .nav-item span {
+        font-size: 0.9rem;
+      }
+
+      .create-button {
+        width: 72px;
+        height: 72px;
+        top: -20px;
+      }
+
+      .create-button svg {
+        width: 36px;
+        height: 36px;
+      }
+
+      .greeting-card h1 {
+        font-size: 1.8rem;
+      }
+
+      .greeting-card p {
+        font-size: 1.05rem;
+      }
+
+      .status-card h3,
+      .recent-activity-card h3 {
+        font-size: 1.4rem;
       }
 
       .gallery-container {
@@ -852,6 +1335,7 @@
   </style>
 </head>
 <body>
+  <div id="app-container">
   <!--
     이미지 교체 방법:
     1. /images 폴더에 내 이미지 파일을 넣는다.
@@ -873,70 +1357,128 @@
   </header>
 
   <main>
-    <section id="overview">
-      <div class="hero-text">
-        <h1>herusphere</h1>
-        <p class="hero-tagline">정혜민의 멀티 페르소나 포트폴리오 전시관</p>
-        <p class="hero-roles">Editor · Brand Marketer · Philosopher · Storyteller · Influencer · Fiction Writer · Character Creator</p>
-      </div>
-      <div class="hero-img">
-        <!-- TODO: 여기 src 경로를 내 컴퓨터의 실제 이미지 파일 경로로 교체해서 사용하세요 -->
-        <img src="images/main-hero.jpg" alt="Hyemin main portrait" />
-      </div>
-    </section>
+    <!-- Home Page (Dashboard) -->
+    <div class="page-content" id="page-home" style="display: block;">
+      <section class="dashboard-section">
+        <div class="greeting-card">
+          <h1 style="font-size: 2rem; margin: 0 0 0.5rem;">안녕하세요, 정혜민님</h1>
+          <p style="font-size: 1.1rem; color: var(--text-muted); margin: 0;">오늘은 어떤 페르소나로 활동할까요?</p>
+        </div>
 
-    <section id="personas">
-      <h2 class="section-heading">Personas Gallery</h2>
-      <p class="section-sub">한 세계 안에서 공존하는 7개의 페르소나. 카드를 클릭하면 각 페르소나의 디테일 섹션으로 이동합니다.</p>
+        <div class="status-card">
+          <h3 style="margin: 0 0 1rem; font-size: 1.3rem;">진행 중인 프로젝트</h3>
+          <div class="project-summary">
+            <div class="project-item">
+              <div class="project-icon">📝</div>
+              <div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem;">브랜시스 매거진 기획</div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">진행률: 75%</div>
+              </div>
+            </div>
+            <div class="project-item">
+              <div class="project-icon">🎨</div>
+              <div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem;">창공 브랜딩</div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">최종 검토 중</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="recent-activity-card">
+          <h3 style="margin: 0 0 1rem; font-size: 1.3rem;">최근 활동</h3>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-icon">✨</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 500; margin-bottom: 0.25rem;">도혜나 에디터로 에세이 작성</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">2시간 전</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon">🖼️</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 500; margin-bottom: 0.25rem;">선혜윤 포트폴리오 이미지 업로드</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">5시간 전</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Agent Page (Persona Gallery) -->
+    <div class="page-content" id="page-agent" style="display: none;">
+      <section id="personas">
+        <h2 class="section-heading">페르소나 선택</h2>
+        <p class="section-sub">어떤 페르소나와 대화하시겠어요?</p>
 
       <div class="persona-grid">
-        <a class="persona-card" href="#dohaena">
+        <a class="persona-card" href="#" onclick="event.preventDefault(); openPersonaChat('도혜나'); return false;">
           <img src="도혜나/도혜나 프로필.JPG" alt="Do Haena editor" />
           <h3>도혜나 에디터</h3>
           <p>브랜시스 매거진 에디터, 중앙대 졸업생</p>
         </a>
 
-        <a class="persona-card" href="#" onclick="event.preventDefault(); showSunheyoonGallery(); return false;">
+        <a class="persona-card" href="#" onclick="event.preventDefault(); openPersonaChat('선혜윤'); return false;">
           <img src="선혜윤/선혜윤프로필.png" alt="Sun Heyoon marketer" />
           <h3>선혜윤 브랜드 마케터</h3>
           <p>창공 · 브랜시스 · 엑스헤일 · 한가 · 발루소피 프로젝트</p>
         </a>
 
-        <a class="persona-card" href="#seoijeong">
-          <!-- TODO: 여기 src 경로를 내 컴퓨터의 실제 이미지 파일 경로로 교체해서 사용하세요 -->
+        <a class="persona-card" href="#" onclick="event.preventDefault(); openPersonaChat('서이정'); return false;">
           <img src="images/seoijeong-card.jpg" alt="Seo Ijeong philosopher" />
           <h3>서이정 철학가</h3>
           <p>인스타그램 철학 에세이 & 가치관 정리</p>
         </a>
 
-        <a class="persona-card" href="#hanhaerang">
-          <!-- TODO: 여기 src 경로를 내 컴퓨터의 실제 이미지 파일 경로로 교체해서 사용하세요 -->
+        <a class="persona-card" href="#" onclick="event.preventDefault(); openPersonaChat('한혜랑'); return false;">
           <img src="images/hanhaerang-card.jpg" alt="Han Haerang character" />
           <h3>한혜랑 – 한가문 막내</h3>
           <p>한가 텀블벅 굿즈 세계관 주인공</p>
         </a>
 
-        <a class="persona-card" href="#cheondahye">
-          <!-- TODO: 여기 src 경로를 내 컴퓨터의 실제 이미지 파일 경로로 교체해서 사용하세요 -->
+        <a class="persona-card" href="#" onclick="event.preventDefault(); openPersonaChat('천다혜'); return false;">
           <img src="images/cheondahye-card.jpg" alt="Cheon Dahye influencer" />
           <h3>천다혜 인플루언서</h3>
           <p>릴스·틱톡 방송·바 라이브 공연</p>
         </a>
 
-        <a class="persona-card" href="#hermine">
-          <!-- TODO: 여기 src 경로를 내 컴퓨터의 실제 이미지 파일 경로로 교체해서 사용하세요 -->
+        <a class="persona-card" href="#" onclick="event.preventDefault(); openPersonaChat('헤르미네'); return false;">
           <img src="images/hermine-card.jpg" alt="Hermine writer" />
           <h3>헤르미네 작가</h3>
           <p>소설과 문학 텍스트의 창작자</p>
         </a>
 
-        <a class="persona-card" href="#sayabyeol">
-          <!-- TODO: 여기 src 경로를 내 컴퓨터의 실제 이미지 파일 경로로 교체해서 사용하세요 -->
+        <a class="persona-card" href="#" onclick="event.preventDefault(); openPersonaChat('사여별'); return false;">
           <img src="images/sayabyeol-card.jpg" alt="Saya Byeol fox character" />
           <h3>사여별 – 여우 캐릭터</h3>
           <p>여우의 여정 · 애니메이션 · 캐릭터 아트</p>
         </a>
       </div>
+      </section>
+    </div>
+
+    <!-- Settings Page -->
+    <div class="page-content" id="page-settings" style="display: none;">
+      <section class="settings-section">
+        <h2 class="section-heading">Settings</h2>
+        <div class="status-card">
+          <h3 style="margin: 0 0 1rem; font-size: 1.3rem;">시스템 상태</h3>
+          <div id="systemStatus" style="padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); font-size: 1rem;">
+            <div style="margin-bottom: 0.5rem;">n8n 연결: <span id="n8nStatus" style="color: var(--accent);">확인 중...</span></div>
+            <div>마지막 동기화: <span id="lastSync" style="color: var(--text-muted);">-</span></div>
+          </div>
+        </div>
+        <div class="status-card">
+          <h3 style="margin: 0 0 1rem; font-size: 1.3rem;">앱 정보</h3>
+          <div style="padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); font-size: 1rem;">
+            <div style="margin-bottom: 0.5rem;">버전: 1.0.0</div>
+            <div>herusphere © 2025</div>
+          </div>
+        </div>
+      </section>
+    </div>
 
       <div class="divider-line"></div>
 
@@ -1056,6 +1598,40 @@
     © 2025 herusphere – Curated universe of Jeong Hyemin
   </footer>
 
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item" data-page="home" onclick="event.preventDefault(); showPage('home'); return false;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span>Home</span>
+    </a>
+    <a href="#" class="nav-item" data-page="agent" onclick="event.preventDefault(); showPage('agent'); return false;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span>Agent</span>
+    </a>
+    <a href="#" class="nav-item nav-item-create" data-page="create" onclick="event.preventDefault(); showCreateModal(); return false;">
+      <div class="create-button">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
+    </a>
+    <a href="#" class="nav-item" data-page="settings" onclick="event.preventDefault(); showPage('settings'); return false;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1m15.364-5.364l-4.243 4.243m0 4.243l4.243 4.243M8.636 8.636L4.393 4.393m0 15.214l4.243-4.243"></path>
+      </svg>
+      <span>Settings</span>
+    </a>
+  </nav>
+  </div>
+
   <!-- Sunheyoon Gallery Overlay -->
   <div class="gallery-overlay" id="sunheyoonGallery">
     <div class="gallery-container">
@@ -1139,6 +1715,90 @@
       <button class="description-close" onclick="closeDohaenaDescription()">×</button>
       <h3 id="dohaenaDescriptionTitle"></h3>
       <p id="dohaenaDescriptionText"></p>
+    </div>
+  </div>
+
+  <!-- Persona Chat Modal -->
+  <div class="persona-chat-modal" id="personaChatModal">
+    <div class="chat-container">
+      <div class="chat-header">
+        <button class="chat-back" onclick="closePersonaChat()">←</button>
+        <div class="chat-persona-info">
+          <div class="chat-persona-avatar" id="chatPersonaAvatar"></div>
+          <div>
+            <div class="chat-persona-name" id="chatPersonaName"></div>
+            <div class="chat-persona-status">온라인</div>
+          </div>
+        </div>
+        <button class="chat-menu">⋯</button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="message message-ai">
+          <div class="message-content">
+            안녕하세요! 무엇을 도와드릴까요?
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <button class="chat-attach" onclick="handleChatImageInput()">📷</button>
+        <textarea 
+          id="chatInput" 
+          placeholder="메시지를 입력하세요..."
+          rows="1"
+          style="flex: 1; padding: 0.75rem; border-radius: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; resize: none; max-height: 120px; letter-spacing: -0.02em;"
+        ></textarea>
+        <button class="chat-send" onclick="sendChatMessage()">전송</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Modal -->
+  <div class="description-modal" id="createModal">
+    <div class="description-content" style="max-width: 500px;">
+      <button class="description-close" onclick="closeCreateModal()">×</button>
+      <h3 style="margin-top: 0;">Create New</h3>
+      <div style="margin-top: 1.5rem;">
+        <textarea 
+          id="createTextInput" 
+          placeholder="무엇을 기록하시겠어요?"
+          style="width: 100%; min-height: 120px; padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; resize: vertical; letter-spacing: -0.02em;"
+        ></textarea>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <button onclick="handleVoiceInput()" style="flex: 1; padding: 0.75rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); cursor: pointer; transition: all 0.2s ease;">
+            🎤 음성
+          </button>
+          <button onclick="handleImageInput()" style="flex: 1; padding: 0.75rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); cursor: pointer; transition: all 0.2s ease;">
+            📷 사진
+          </button>
+        </div>
+        <button onclick="handleCreateSubmit()" style="width: 100%; margin-top: 1rem; padding: 1rem; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #ff6b9d); border: none; color: white; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
+          저장하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="description-modal" id="settingsModal">
+    <div class="description-content" style="max-width: 500px;">
+      <button class="description-close" onclick="closeSettingsModal()">×</button>
+      <h3 style="margin-top: 0;">Settings</h3>
+      <div style="margin-top: 1.5rem;">
+        <div style="margin-bottom: 1.5rem;">
+          <h4 style="margin: 0 0 0.5rem; color: var(--accent);">시스템 상태</h4>
+          <div id="systemStatus" style="padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.9rem;">
+            <div style="margin-bottom: 0.5rem;">n8n 연결: <span id="n8nStatus" style="color: var(--accent);">확인 중...</span></div>
+            <div>마지막 동기화: <span id="lastSync" style="color: var(--text-muted);">-</span></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <h4 style="margin: 0 0 0.5rem; color: var(--accent);">앱 정보</h4>
+          <div style="padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.9rem;">
+            <div style="margin-bottom: 0.5rem;">버전: 1.0.0</div>
+            <div>herusphere © 2025</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1459,6 +2119,278 @@
       if (e.target === this) {
         closeDohaenaDescription();
       }
+    });
+
+    // Create Modal Functions
+    function showCreateModal() {
+      const modal = document.getElementById('createModal');
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => {
+        document.getElementById('createTextInput').focus();
+      }, 300);
+    }
+
+    function closeCreateModal() {
+      const modal = document.getElementById('createModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      document.getElementById('createTextInput').value = '';
+    }
+
+    function handleVoiceInput() {
+      alert('음성 입력 기능은 준비 중입니다.');
+    }
+
+    function handleImageInput() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          alert('이미지가 선택되었습니다: ' + file.name);
+          // 여기에 이미지 업로드 로직 추가
+        }
+      };
+      input.click();
+    }
+
+    function handleCreateSubmit() {
+      const text = document.getElementById('createTextInput').value;
+      if (text.trim()) {
+        alert('저장되었습니다: ' + text);
+        closeCreateModal();
+        // 여기에 실제 저장 로직 추가 (n8n 웹훅 등)
+      } else {
+        alert('내용을 입력해주세요.');
+      }
+    }
+
+    // Settings Modal Functions
+    function showSettingsModal() {
+      const modal = document.getElementById('settingsModal');
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      // n8n 상태 확인
+      checkN8NStatus();
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('settingsModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function checkN8NStatus() {
+      // n8n 웹훅 상태 확인 (예시)
+      document.getElementById('n8nStatus').textContent = '연결됨';
+      document.getElementById('n8nStatus').style.color = 'var(--accent)';
+      document.getElementById('lastSync').textContent = new Date().toLocaleTimeString('ko-KR');
+    }
+
+    // Close modals when clicking outside
+    document.getElementById('createModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeCreateModal();
+      }
+    });
+
+    document.getElementById('settingsModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSettingsModal();
+      }
+    });
+
+    // Auto-resize textarea
+    document.getElementById('createTextInput').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 300) + 'px';
+    });
+
+    // Page Navigation
+    function showPage(pageName) {
+      // Hide all pages
+      document.querySelectorAll('.page-content').forEach(page => {
+        page.classList.remove('active');
+        page.style.display = 'none';
+      });
+
+      // Show selected page
+      const targetPage = document.getElementById(`page-${pageName}`);
+      if (targetPage) {
+        targetPage.classList.add('active');
+        targetPage.style.display = 'block';
+      }
+
+      // Update nav items
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.page === pageName) {
+          item.classList.add('active');
+        }
+      });
+
+      // Check n8n status if settings page
+      if (pageName === 'settings') {
+        checkN8NStatus();
+      }
+    }
+
+    // Initialize: Show home page
+    showPage('home');
+
+    // Persona Chat Functions
+    let currentPersona = null;
+    const personaInfo = {
+      '도혜나': {
+        name: '도혜나',
+        avatar: '도혜나/도혜나 프로필.JPG',
+        description: '브랜시스 매거진 에디터'
+      },
+      '선혜윤': {
+        name: '선혜윤',
+        avatar: '선혜윤/선혜윤프로필.png',
+        description: '브랜드 마케터'
+      },
+      '서이정': {
+        name: '서이정',
+        avatar: 'images/seoijeong-card.jpg',
+        description: '철학가'
+      },
+      '한혜랑': {
+        name: '한혜랑',
+        avatar: 'images/hanhaerang-card.jpg',
+        description: '한가문 막내'
+      },
+      '천다혜': {
+        name: '천다혜',
+        avatar: 'images/cheondahye-card.jpg',
+        description: '인플루언서'
+      },
+      '헤르미네': {
+        name: '헤르미네',
+        avatar: 'images/hermine-card.jpg',
+        description: '작가'
+      },
+      '사여별': {
+        name: '사여별',
+        avatar: 'images/sayabyeol-card.jpg',
+        description: '여우 캐릭터'
+      }
+    };
+
+    function openPersonaChat(personaName) {
+      currentPersona = personaName;
+      const info = personaInfo[personaName];
+      
+      if (info) {
+        document.getElementById('chatPersonaName').textContent = info.name;
+        const avatar = document.getElementById('chatPersonaAvatar');
+        if (info.avatar) {
+          avatar.style.backgroundImage = `url(${info.avatar})`;
+          avatar.style.backgroundSize = 'cover';
+          avatar.style.backgroundPosition = 'center';
+        }
+      }
+
+      document.getElementById('personaChatModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Clear messages and add welcome message
+      const messagesContainer = document.getElementById('chatMessages');
+      messagesContainer.innerHTML = `
+        <div class="message message-ai">
+          <div class="message-content">
+            안녕하세요, ${personaName}입니다. 무엇을 도와드릴까요?
+          </div>
+        </div>
+      `;
+      
+      setTimeout(() => {
+        document.getElementById('chatInput').focus();
+      }, 300);
+    }
+
+    function closePersonaChat() {
+      document.getElementById('personaChatModal').classList.remove('active');
+      document.body.style.overflow = '';
+      currentPersona = null;
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (!message || !currentPersona) return;
+
+      // Add user message
+      const messagesContainer = document.getElementById('chatMessages');
+      const userMessage = document.createElement('div');
+      userMessage.className = 'message message-user';
+      userMessage.innerHTML = `<div class="message-content">${message}</div>`;
+      messagesContainer.appendChild(userMessage);
+
+      // Clear input
+      input.value = '';
+      input.style.height = 'auto';
+
+      // Scroll to bottom
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      // Simulate AI response (실제로는 n8n 웹훅으로 전송)
+      setTimeout(() => {
+        const aiMessage = document.createElement('div');
+        aiMessage.className = 'message message-ai';
+        aiMessage.innerHTML = `<div class="message-content">메시지를 받았습니다. ${currentPersona} 페르소나로 처리 중입니다...</div>`;
+        messagesContainer.appendChild(aiMessage);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        // 여기에 실제 n8n 웹훅 호출 로직 추가
+        // fetch('YOUR_N8N_WEBHOOK_URL', { ... })
+      }, 500);
+    }
+
+    function handleChatImageInput() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const messagesContainer = document.getElementById('chatMessages');
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message message-user';
+            userMessage.innerHTML = `
+              <div class="message-content">
+                <img src="${event.target.result}" alt="Uploaded image" style="max-width: 200px; border-radius: 12px; margin-top: 0.5rem;" />
+              </div>
+            `;
+            messagesContainer.appendChild(userMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // 이미지와 함께 메시지 전송 로직 추가
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+    }
+
+    // Enter key to send message
+    document.getElementById('chatInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    });
+
+    // Auto-resize chat textarea
+    document.getElementById('chatInput').addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
   </script>
 </body>
