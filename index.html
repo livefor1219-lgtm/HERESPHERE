@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HERESPHERE – Jeong Hyemin Portfolio</title>
+  <title>herusphere – Jeong Hyemin Portfolio</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,6 +32,47 @@
       background: radial-gradient(circle at top, #111a21, #060809);
       color: var(--text-light);
       line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Starfield Background */
+    .starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .star.small {
+      width: 1px;
+      height: 1px;
+    }
+
+    .star.medium {
+      width: 2px;
+      height: 2px;
+    }
+
+    .star.large {
+      width: 3px;
+      height: 3px;
     }
 
     a {
@@ -93,6 +134,8 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 3rem 2rem 5rem;
+      position: relative;
+      z-index: 1;
     }
 
     section {
@@ -122,6 +165,29 @@
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 2rem;
       align-items: center;
+      position: relative;
+      background: rgba(18, 32, 41, 0.85);
+      overflow: hidden;
+    }
+
+    #overview::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('혜르스피어.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    #overview > * {
+      position: relative;
+      z-index: 1;
     }
 
     .hero-text h1 {
@@ -166,13 +232,50 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      transition: transform 0.25s ease, border 0.25s ease, box-shadow 0.25s ease;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border 0.4s ease, box-shadow 0.4s ease;
+      position: relative;
+    }
+
+    .persona-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(207, 52, 114, 0.1) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
     }
 
     .persona-card:hover {
-      transform: translateY(-6px) scale(1.03);
+      transform: translateY(-8px) scale(1.05) rotateY(5deg);
       border-color: var(--accent);
-      box-shadow: 0 20px 30px rgba(207, 52, 114, 0.25);
+      box-shadow: 0 30px 60px rgba(207, 52, 114, 0.4), 0 0 40px rgba(207, 52, 114, 0.2);
+    }
+
+    .persona-card:hover::before {
+      opacity: 1;
+    }
+
+    .persona-card::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+      pointer-events: none;
+    }
+
+    .persona-card:hover::after {
+      width: 300px;
+      height: 300px;
     }
 
     .persona-card h3 {
@@ -211,6 +314,30 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1rem;
+    }
+
+    .portfolio-item {
+      position: relative;
+      cursor: pointer;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .portfolio-item:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 15px 30px rgba(207, 52, 114, 0.3);
+    }
+
+    .portfolio-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: filter 0.3s ease;
+    }
+
+    .portfolio-item:hover img {
+      filter: brightness(1.1);
     }
 
     .divider-line {
@@ -267,16 +394,57 @@
       z-index: 1000;
       overflow-y: auto;
       backdrop-filter: blur(20px);
+      opacity: 0;
+      animation: spaceTravelIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
     .gallery-overlay.active {
       display: block;
     }
 
+    @keyframes spaceTravelIn {
+      0% {
+        opacity: 0;
+        transform: scale(1.2);
+        filter: blur(20px);
+      }
+      50% {
+        opacity: 0.5;
+        filter: blur(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+      }
+    }
+
+    .gallery-overlay::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(207, 52, 114, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(45, 84, 99, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+      animation: planetGlow 8s ease-in-out infinite;
+    }
+
+    @keyframes planetGlow {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.1); }
+    }
+
     .gallery-container {
       max-width: 1400px;
       margin: 0 auto;
       padding: 3rem 2rem;
+      position: relative;
+      z-index: 1;
     }
 
     .gallery-header {
@@ -340,15 +508,41 @@
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.06);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
+      position: relative;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(207, 52, 114, 0.2) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .project-card:hover {
-      transform: translateY(-8px) scale(1.02);
+      transform: translateY(-10px) scale(1.05) rotateX(5deg);
       border-color: var(--accent);
-      box-shadow: 0 25px 40px rgba(207, 52, 114, 0.3);
+      box-shadow: 0 30px 60px rgba(207, 52, 114, 0.4), 0 0 50px rgba(207, 52, 114, 0.2);
+    }
+
+    .project-card:hover::before {
+      width: 400px;
+      height: 400px;
+    }
+
+    .project-card > * {
+      position: relative;
+      z-index: 1;
     }
 
     .project-card-image {
@@ -385,12 +579,34 @@
       background: rgba(0, 0, 0, 0.98);
       z-index: 2000;
       overflow: hidden;
+      opacity: 0;
     }
 
     .image-viewer.active {
       display: flex;
       align-items: center;
       justify-content: center;
+      animation: spaceTravelIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .image-viewer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 30% 40%, rgba(207, 52, 114, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 70% 60%, rgba(45, 84, 99, 0.15) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+      animation: planetOrbit 12s linear infinite;
+    }
+
+    @keyframes planetOrbit {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     .viewer-container {
@@ -408,6 +624,22 @@
       object-fit: contain;
       border-radius: 12px;
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+      position: relative;
+      z-index: 1;
+      transition: opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease;
+    }
+
+    @keyframes imageFadeIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.9) rotateY(-10deg);
+        filter: blur(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotateY(0deg);
+        filter: blur(0);
+      }
     }
 
     .viewer-nav {
@@ -482,6 +714,93 @@
       backdrop-filter: blur(10px);
     }
 
+    /* Dohaena Description Modal */
+    .description-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .description-modal.active {
+      display: flex;
+      animation: modalFadeIn 0.3s ease forwards;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .description-content {
+      background: rgba(18, 32, 41, 0.95);
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 600px;
+      width: 90%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+      position: relative;
+      transform: scale(0.9);
+      animation: modalScaleIn 0.3s ease forwards;
+    }
+
+    @keyframes modalScaleIn {
+      to {
+        transform: scale(1);
+      }
+    }
+
+    .description-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .description-close:hover {
+      background: rgba(207, 52, 114, 0.3);
+      border-color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    .description-content h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      color: var(--accent);
+    }
+
+    .description-content p {
+      margin: 0;
+      line-height: 1.8;
+      color: var(--text-light);
+      font-size: 1.05rem;
+    }
+
     @media (max-width: 768px) {
       header {
         position: static;
@@ -542,7 +861,7 @@
 
   <header>
     <div class="nav-container">
-      <div class="logo">HERESPHERE</div>
+      <div class="logo">herusphere</div>
       <nav>
         <ul>
           <li><a href="#overview">Overview</a></li>
@@ -556,7 +875,7 @@
   <main>
     <section id="overview">
       <div class="hero-text">
-        <h1>HERESPHERE</h1>
+        <h1>herusphere</h1>
         <p class="hero-tagline">정혜민의 멀티 페르소나 포트폴리오 전시관</p>
         <p class="hero-roles">Editor · Brand Marketer · Philosopher · Storyteller · Influencer · Fiction Writer · Character Creator</p>
       </div>
@@ -572,8 +891,7 @@
 
       <div class="persona-grid">
         <a class="persona-card" href="#dohaena">
-          <!-- TODO: 여기 src 경로를 내 컴퓨터의 실제 이미지 파일 경로로 교체해서 사용하세요 -->
-          <img src="images/dohaena-card.jpg" alt="Do Haena editor" />
+          <img src="도혜나/도혜나 프로필.JPG" alt="Do Haena editor" />
           <h3>도혜나 에디터</h3>
           <p>브랜시스 매거진 에디터, 중앙대 졸업생</p>
         </a>
@@ -626,11 +944,46 @@
       <section class="persona-detail" id="dohaena">
         <h2>도혜나 에디터</h2>
         <p>브랜시스 매거진에서 기획과 편집을 이끌며, 도시와 문화의 경계를 넘나드는 에디토리얼을 선보입니다. 중앙대에서 쌓은 인문학적 기반을 바탕으로, 텍스트와 이미지가 공존하는 감각적 스토리텔링을 완성합니다.</p>
-        <div class="persona-gallery">
-          <!-- TODO: 여기 src 경로를 내 컴퓨터의 실제 이미지 파일 경로로 교체해서 사용하세요 -->
-          <img src="images/dohaena-1.jpg" alt="Do Haena work 1" />
-          <img src="images/dohaena-2.jpg" alt="Do Haena work 2" />
-          <img src="images/dohaena-3.jpg" alt="Do Haena work 3" />
+        <div class="persona-gallery dohaena-gallery">
+          <div class="portfolio-item" onclick="showDohaenaDescription(0)">
+            <img src="도혜나/도혜나 작업물/IMG_8356.jpg" alt="Do Haena work 1" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(1)">
+            <img src="도혜나/도혜나 작업물/IMG_8357.jpg" alt="Do Haena work 2" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(2)">
+            <img src="도혜나/도혜나 작업물/IMG_8358.jpg" alt="Do Haena work 3" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(3)">
+            <img src="도혜나/도혜나 작업물/IMG_8359.jpg" alt="Do Haena work 4" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(4)">
+            <img src="도혜나/도혜나 작업물/IMG_8360.jpg" alt="Do Haena work 5" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(5)">
+            <img src="도혜나/도혜나 작업물/IMG_8361.jpg" alt="Do Haena work 6" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(6)">
+            <img src="도혜나/도혜나 작업물/IMG_8362.jpg" alt="Do Haena work 7" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(7)">
+            <img src="도혜나/도혜나 작업물/IMG_8363.jpg" alt="Do Haena work 8" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(8)">
+            <img src="도혜나/도혜나 작업물/IMG_8364.jpg" alt="Do Haena work 9" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(9)">
+            <img src="도혜나/도혜나 작업물/IMG_8365.jpg" alt="Do Haena work 10" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(10)">
+            <img src="도혜나/도혜나 작업물/IMG_8366.jpg" alt="Do Haena work 11" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(11)">
+            <img src="도혜나/도혜나 작업물/IMG_8367.jpg" alt="Do Haena work 12" />
+          </div>
+          <div class="portfolio-item" onclick="showDohaenaDescription(12)">
+            <img src="도혜나/도혜나 작업물/IMG_8368.jpg" alt="Do Haena work 13" />
+          </div>
         </div>
       </section>
 
@@ -700,7 +1053,7 @@
   </main>
 
   <footer>
-    © 2025 HERESPHERE – Curated universe of Jeong Hyemin
+    © 2025 herusphere – Curated universe of Jeong Hyemin
   </footer>
 
   <!-- Sunheyoon Gallery Overlay -->
@@ -780,7 +1133,49 @@
     </div>
   </div>
 
+  <!-- Dohaena Description Modal -->
+  <div class="description-modal" id="dohaenaDescriptionModal">
+    <div class="description-content">
+      <button class="description-close" onclick="closeDohaenaDescription()">×</button>
+      <h3 id="dohaenaDescriptionTitle"></h3>
+      <p id="dohaenaDescriptionText"></p>
+    </div>
+  </div>
+
+  <!-- Starfield Background -->
+  <div class="starfield" id="starfield"></div>
+
   <script>
+    // Create starfield background
+    function createStarfield() {
+      const starfield = document.getElementById('starfield');
+      const numStars = 150;
+      
+      for (let i = 0; i < numStars; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        const size = Math.random();
+        if (size < 0.3) {
+          star.classList.add('small');
+        } else if (size < 0.7) {
+          star.classList.add('medium');
+        } else {
+          star.classList.add('large');
+        }
+        
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        
+        starfield.appendChild(star);
+      }
+    }
+
+    // Initialize starfield on page load
+    createStarfield();
+
     // Project image mappings
     const projectImages = {
       '창공': [
@@ -939,10 +1334,22 @@
     function updateViewerImage() {
       if (currentImages.length === 0) return;
       
+      const viewerImage = document.getElementById('viewerImage');
       const imagePath = currentImages[currentImageIndex];
-      document.getElementById('viewerImage').src = imagePath;
-      document.getElementById('viewerCounter').textContent = 
-        `${currentImageIndex + 1} / ${currentImages.length}`;
+      
+      // Add fade out animation
+      viewerImage.style.opacity = '0';
+      viewerImage.style.transform = 'scale(0.9) rotateY(-10deg)';
+      viewerImage.style.filter = 'blur(10px)';
+      
+      setTimeout(() => {
+        viewerImage.src = imagePath;
+        viewerImage.style.opacity = '1';
+        viewerImage.style.transform = 'scale(1) rotateY(0deg)';
+        viewerImage.style.filter = 'blur(0)';
+        document.getElementById('viewerCounter').textContent = 
+          `${currentImageIndex + 1} / ${currentImages.length}`;
+      }, 200);
     }
 
     // Keyboard navigation
@@ -969,6 +1376,88 @@
     document.getElementById('imageViewer').addEventListener('click', function(e) {
       if (e.target === this || e.target.classList.contains('viewer-container')) {
         closeImageViewer();
+      }
+    });
+
+    // Dohaena Portfolio Descriptions
+    const dohaenaDescriptions = [
+      {
+        title: "도시의 리듬",
+        description: "도심 속 일상의 리듬을 포착한 에디토리얼 작품. 도시의 움직임과 정적의 대비를 통해 현대인의 삶을 시각적으로 표현했습니다."
+      },
+      {
+        title: "문화의 경계",
+        description: "서로 다른 문화가 만나는 지점을 탐구한 기획물. 경계를 넘나드는 이야기를 통해 다문화적 시각을 제시합니다."
+      },
+      {
+        title: "텍스트와 이미지의 대화",
+        description: "언어와 시각이 만나 새로운 의미를 만들어내는 실험적 레이아웃. 에디토리얼 디자인의 가능성을 확장합니다."
+      },
+      {
+        title: "인문학적 시선",
+        description: "중앙대에서 쌓은 인문학적 기반을 바탕으로 한 깊이 있는 기획. 철학적 사유와 시각적 표현의 결합입니다."
+      },
+      {
+        title: "감각적 스토리텔링",
+        description: "이미지와 텍스트의 조화를 통해 독자의 감각을 자극하는 에디토리얼. 감성적 소통을 추구합니다."
+      },
+      {
+        title: "도시 풍경의 해석",
+        description: "일상의 풍경을 새로운 시각으로 재해석한 작품. 익숙한 공간에 숨겨진 의미를 발견합니다."
+      },
+      {
+        title: "문화 기획의 실험",
+        description: "전통적인 매거진 형식을 넘어선 실험적 기획. 독창적인 레이아웃과 콘텐츠 구성이 돋보입니다."
+      },
+      {
+        title: "시각적 언어",
+        description: "이미지만으로도 이야기를 전달하는 시각적 언어의 힘. 미니멀한 구성 속에 담긴 깊은 메시지."
+      },
+      {
+        title: "에디토리얼 디자인",
+        description: "브랜시스 매거진의 아이덴티티를 반영한 에디토리얼 디자인. 일관된 시각 언어로 브랜드 가치를 전달합니다."
+      },
+      {
+        title: "콘텐츠 기획",
+        description: "독자의 관점을 고려한 세심한 콘텐츠 기획. 읽는 즐거움과 시각적 경험을 동시에 제공합니다."
+      },
+      {
+        title: "창의적 레이아웃",
+        description: "규칙을 깨는 창의적 레이아웃 실험. 공간의 활용과 타이포그래피의 조화가 인상적입니다."
+      },
+      {
+        title: "스토리텔링의 확장",
+        description: "단순한 정보 전달을 넘어선 스토리텔링. 독자와의 감정적 연결을 추구하는 에디토리얼 작품."
+      },
+      {
+        title: "편집자의 시선",
+        description: "에디터로서의 통찰력이 드러나는 작품. 콘텐츠의 본질을 꿰뚫는 기획력과 시각적 감각이 조화를 이룹니다."
+      }
+    ];
+
+    function showDohaenaDescription(index) {
+      const modal = document.getElementById('dohaenaDescriptionModal');
+      const title = document.getElementById('dohaenaDescriptionTitle');
+      const description = document.getElementById('dohaenaDescriptionText');
+      
+      if (dohaenaDescriptions[index]) {
+        title.textContent = dohaenaDescriptions[index].title;
+        description.textContent = dohaenaDescriptions[index].description;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeDohaenaDescription() {
+      const modal = document.getElementById('dohaenaDescriptionModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('dohaenaDescriptionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeDohaenaDescription();
       }
     });
   </script>
