@@ -1758,6 +1758,15 @@
       <button class="description-close" onclick="closeCreateModal()">×</button>
       <h3 style="margin-top: 0;">Create New</h3>
       <div style="margin-top: 1.5rem;">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">작업 유형 선택</label>
+          <select id="createActionType" style="width: 100%; padding: 0.75rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; cursor: pointer;">
+            <option value="save_note">📝 메모 저장</option>
+            <option value="instagram_post">📱 인스타그램 글 작성</option>
+            <option value="image_prompt">🎨 이미지 생성</option>
+            <option value="draft_email">✉️ 이메일 초안 작성</option>
+          </select>
+        </div>
         <textarea 
           id="createTextInput" 
           placeholder="무엇을 기록하시겠어요?"
@@ -2156,12 +2165,14 @@
           const imageData = event.target.result;
           const text = document.getElementById('createTextInput').value;
 
-          // Send to n8n webhook
+          // Send to n8n webhook (이미지 첨부는 image_prompt로 처리)
+          const selectedActionType = document.getElementById('createActionType')?.value || 'image_prompt';
           const result = await sendToN8N({
-            action: 'create',
-            message: text,
+            actionType: selectedActionType,
+            content: text,
             image: imageData,
             imageName: file.name,
+            persona: currentPersona || 'default',
             timestamp: new Date().toISOString(),
             source: 'create_modal_image'
           });
@@ -2220,15 +2231,15 @@
       submitSpinner.style.display = 'inline-block';
 
       try {
-        // n8n 웹훅으로 전송 (요청한 형식대로)
+        // n8n 웹훅으로 전송 (테스트용: 무조건 instagram_post)
         const response = await fetch(N8N_WEBHOOK_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            content: text,
-            persona: currentPersona || 'default'
+            actionType: 'instagram_post',
+            content: text
           })
         });
 
@@ -2291,7 +2302,7 @@
       try {
         // n8n 웹훅에 상태 확인 요청 전송
         const result = await sendToN8N({
-          action: 'status_check',
+          actionType: 'status_check',
           timestamp: new Date().toISOString()
         });
 
@@ -2467,11 +2478,11 @@
       messagesContainer.appendChild(loadingMessage);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-      // Send to n8n webhook
+      // Send to n8n webhook (페르소나 채팅은 기본적으로 save_note로 처리)
       const result = await sendToN8N({
-        action: 'chat',
+        actionType: 'save_note',
         persona: currentPersona,
-        message: message,
+        content: message,
         timestamp: new Date().toISOString(),
         source: 'persona_chat'
       });
@@ -2527,11 +2538,11 @@
           messagesContainer.appendChild(loadingMessage);
           messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-          // Send to n8n webhook
+          // Send to n8n webhook (이미지 첨부는 image_prompt로 처리)
           const result = await sendToN8N({
-            action: 'chat',
+            actionType: 'image_prompt',
             persona: currentPersona || 'default',
-            message: '',
+            content: '',
             image: imageData,
             imageName: file.name,
             timestamp: new Date().toISOString(),
