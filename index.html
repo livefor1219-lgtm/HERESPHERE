@@ -1771,8 +1771,9 @@
             📷 사진
           </button>
         </div>
-        <button onclick="handleCreateSubmit()" style="width: 100%; margin-top: 1rem; padding: 1rem; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #ff6b9d); border: none; color: white; font-weight: 600; cursor: pointer; transition: transform 0.2s ease;">
-          저장하기
+        <button id="createSubmitButton" onclick="handleCreateSubmit()" style="width: 100%; margin-top: 1rem; padding: 1rem; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #ff6b9d); border: none; color: white; font-weight: 600; cursor: pointer; transition: transform 0.2s ease; position: relative;">
+          <span id="createSubmitText">전송하기</span>
+          <span id="createSubmitSpinner" style="display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">⏳</span>
         </button>
       </div>
     </div>
@@ -2142,28 +2143,124 @@
       alert('음성 입력 기능은 준비 중입니다.');
     }
 
-    function handleImageInput() {
+    async function handleImageInput() {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
-      input.onchange = (e) => {
+      input.onchange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-          alert('이미지가 선택되었습니다: ' + file.name);
-          // 여기에 이미지 업로드 로직 추가
-        }
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          const imageData = event.target.result;
+          const text = document.getElementById('createTextInput').value;
+
+          // Send to n8n webhook
+          const result = await sendToN8N({
+            action: 'create',
+            message: text,
+            image: imageData,
+            imageName: file.name,
+            timestamp: new Date().toISOString(),
+            source: 'create_modal_image'
+          });
+
+          if (result.success) {
+            alert('이미지와 메시지가 전송되었습니다!');
+            closeCreateModal();
+          } else {
+            alert('오류가 발생했습니다: ' + result.error);
+          }
+        };
+        reader.readAsDataURL(file);
       };
       input.click();
     }
 
-    function handleCreateSubmit() {
-      const text = document.getElementById('createTextInput').value;
-      if (text.trim()) {
-        alert('저장되었습니다: ' + text);
-        closeCreateModal();
-        // 여기에 실제 저장 로직 추가 (n8n 웹훅 등)
-      } else {
+    // n8n Webhook URL
+    const N8N_WEBHOOK_URL = 'https://sunhyeyun.app.n8n.cloud/webhook-test/herusphere-action';
+
+    async function sendToN8N(data) {
+      try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          return { success: true, data: result };
+        } else {
+          return { success: false, error: '서버 오류가 발생했습니다.' };
+        }
+      } catch (error) {
+        console.error('n8n 웹훅 오류:', error);
+        return { success: false, error: error.message };
+      }
+    }
+
+    async function handleCreateSubmit() {
+      const text = document.getElementById('createTextInput').value.trim();
+      if (!text) {
         alert('내용을 입력해주세요.');
+        return;
+      }
+
+      const submitButton = document.getElementById('createSubmitButton');
+      const submitText = document.getElementById('createSubmitText');
+      const submitSpinner = document.getElementById('createSubmitSpinner');
+
+      // 로딩 상태로 변경
+      submitButton.disabled = true;
+      submitText.style.opacity = '0';
+      submitSpinner.style.display = 'inline-block';
+
+      try {
+        // n8n 웹훅으로 전송 (요청한 형식대로)
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: text,
+            persona: currentPersona || 'default'
+          })
+        });
+
+        // 로딩 상태 해제
+        submitButton.disabled = false;
+        submitText.style.opacity = '1';
+        submitSpinner.style.display = 'none';
+
+        if (response.ok) {
+          // 성공 알림
+          alert('전송 완료!');
+          closeCreateModal();
+          
+          // 입력창 초기화
+          document.getElementById('createTextInput').value = '';
+          
+          // 홈 페이지가 활성화되어 있으면 최근 활동 업데이트를 위해 새로고침
+          if (document.getElementById('page-home').classList.contains('active')) {
+            // 최근 활동을 업데이트할 수 있도록 (선택사항)
+            // location.reload(); // 필요시 주석 해제
+          }
+        } else {
+          alert('전송 실패: 서버 오류가 발생했습니다.');
+        }
+      } catch (error) {
+        // 로딩 상태 해제
+        submitButton.disabled = false;
+        submitText.style.opacity = '1';
+        submitSpinner.style.display = 'none';
+        
+        console.error('n8n 웹훅 오류:', error);
+        alert('전송 실패: ' + error.message);
       }
     }
 
@@ -2182,11 +2279,36 @@
       document.body.style.overflow = '';
     }
 
-    function checkN8NStatus() {
-      // n8n 웹훅 상태 확인 (예시)
-      document.getElementById('n8nStatus').textContent = '연결됨';
-      document.getElementById('n8nStatus').style.color = 'var(--accent)';
-      document.getElementById('lastSync').textContent = new Date().toLocaleTimeString('ko-KR');
+    async function checkN8NStatus() {
+      const statusElement = document.getElementById('n8nStatus');
+      const syncElement = document.getElementById('lastSync');
+      
+      if (!statusElement || !syncElement) return;
+
+      statusElement.textContent = '확인 중...';
+      statusElement.style.color = 'var(--text-muted)';
+
+      try {
+        // n8n 웹훅에 상태 확인 요청 전송
+        const result = await sendToN8N({
+          action: 'status_check',
+          timestamp: new Date().toISOString()
+        });
+
+        if (result.success) {
+          statusElement.textContent = '연결됨';
+          statusElement.style.color = 'var(--accent)';
+          syncElement.textContent = new Date().toLocaleTimeString('ko-KR');
+        } else {
+          statusElement.textContent = '연결 실패';
+          statusElement.style.color = '#ff4444';
+          syncElement.textContent = '오류 발생';
+        }
+      } catch (error) {
+        statusElement.textContent = '연결 실패';
+        statusElement.style.color = '#ff4444';
+        syncElement.textContent = '오류 발생';
+      }
     }
 
     // Close modals when clicking outside
@@ -2318,7 +2440,7 @@
       currentPersona = null;
     }
 
-    function sendChatMessage() {
+    async function sendChatMessage() {
       const input = document.getElementById('chatInput');
       const message = input.value.trim();
       
@@ -2338,43 +2460,103 @@
       // Scroll to bottom
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-      // Simulate AI response (실제로는 n8n 웹훅으로 전송)
-      setTimeout(() => {
-        const aiMessage = document.createElement('div');
-        aiMessage.className = 'message message-ai';
-        aiMessage.innerHTML = `<div class="message-content">메시지를 받았습니다. ${currentPersona} 페르소나로 처리 중입니다...</div>`;
-        messagesContainer.appendChild(aiMessage);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      // Show loading message
+      const loadingMessage = document.createElement('div');
+      loadingMessage.className = 'message message-ai';
+      loadingMessage.innerHTML = `<div class="message-content">처리 중...</div>`;
+      messagesContainer.appendChild(loadingMessage);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-        // 여기에 실제 n8n 웹훅 호출 로직 추가
-        // fetch('YOUR_N8N_WEBHOOK_URL', { ... })
-      }, 500);
+      // Send to n8n webhook
+      const result = await sendToN8N({
+        action: 'chat',
+        persona: currentPersona,
+        message: message,
+        timestamp: new Date().toISOString(),
+        source: 'persona_chat'
+      });
+
+      // Remove loading message
+      loadingMessage.remove();
+
+      // Add AI response
+      const aiMessage = document.createElement('div');
+      aiMessage.className = 'message message-ai';
+      
+      if (result.success) {
+        // n8n에서 반환된 응답 사용 (있는 경우)
+        const responseText = result.data?.response || result.data?.message || 
+          `${currentPersona} 페르소나로 메시지를 처리했습니다.`;
+        aiMessage.innerHTML = `<div class="message-content">${responseText}</div>`;
+      } else {
+        aiMessage.innerHTML = `<div class="message-content">오류가 발생했습니다: ${result.error}</div>`;
+      }
+      
+      messagesContainer.appendChild(aiMessage);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    function handleChatImageInput() {
+    async function handleChatImageInput() {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
-      input.onchange = (e) => {
+      input.onchange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const messagesContainer = document.getElementById('chatMessages');
-            const userMessage = document.createElement('div');
-            userMessage.className = 'message message-user';
-            userMessage.innerHTML = `
-              <div class="message-content">
-                <img src="${event.target.result}" alt="Uploaded image" style="max-width: 200px; border-radius: 12px; margin-top: 0.5rem;" />
-              </div>
-            `;
-            messagesContainer.appendChild(userMessage);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        if (!file) return;
 
-            // 이미지와 함께 메시지 전송 로직 추가
-          };
-          reader.readAsDataURL(file);
-        }
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          const imageData = event.target.result;
+          const messagesContainer = document.getElementById('chatMessages');
+          
+          // Show image in chat
+          const userMessage = document.createElement('div');
+          userMessage.className = 'message message-user';
+          userMessage.innerHTML = `
+            <div class="message-content">
+              <img src="${imageData}" alt="Uploaded image" style="max-width: 200px; border-radius: 12px; margin-top: 0.5rem;" />
+            </div>
+          `;
+          messagesContainer.appendChild(userMessage);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+          // Show loading
+          const loadingMessage = document.createElement('div');
+          loadingMessage.className = 'message message-ai';
+          loadingMessage.innerHTML = `<div class="message-content">이미지 처리 중...</div>`;
+          messagesContainer.appendChild(loadingMessage);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+          // Send to n8n webhook
+          const result = await sendToN8N({
+            action: 'chat',
+            persona: currentPersona || 'default',
+            message: '',
+            image: imageData,
+            imageName: file.name,
+            timestamp: new Date().toISOString(),
+            source: 'persona_chat_image'
+          });
+
+          // Remove loading message
+          loadingMessage.remove();
+
+          // Add AI response
+          const aiMessage = document.createElement('div');
+          aiMessage.className = 'message message-ai';
+          
+          if (result.success) {
+            const responseText = result.data?.response || result.data?.message || 
+              '이미지를 받았습니다. 처리 중입니다...';
+            aiMessage.innerHTML = `<div class="message-content">${responseText}</div>`;
+          } else {
+            aiMessage.innerHTML = `<div class="message-content">오류가 발생했습니다: ${result.error}</div>`;
+          }
+          
+          messagesContainer.appendChild(aiMessage);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        };
+        reader.readAsDataURL(file);
       };
       input.click();
     }
