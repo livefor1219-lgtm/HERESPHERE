@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="herusphere" />
   <meta name="theme-color" content="#000000" />
@@ -1758,20 +1758,90 @@
       <button class="description-close" onclick="closeCreateModal()">×</button>
       <h3 style="margin-top: 0;">Create New</h3>
       <div style="margin-top: 1.5rem;">
-        <div style="margin-bottom: 1rem;">
-          <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">작업 유형 선택</label>
-          <select id="createActionType" style="width: 100%; padding: 0.75rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; cursor: pointer;">
-            <option value="save_note">📝 메모 저장</option>
-            <option value="instagram_post">📱 인스타그램 글 작성</option>
-            <option value="image_prompt">🎨 이미지 생성</option>
-            <option value="draft_email">✉️ 이메일 초안 작성</option>
-          </select>
+        <!-- 작업 모드 선택 칩 버튼 -->
+        <div style="margin-bottom: 1.5rem;">
+          <div id="modeChipsContainer" style="display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none;">
+            <button class="mode-chip active" data-mode="save_note" data-persona="서이정" onclick="selectMode('save_note')" style="flex-shrink: 0; padding: 0.75rem 1.25rem; border-radius: 20px; background: linear-gradient(135deg, #1e3a5f, #2d5a8a); border: 1px solid #2d5a8a; color: white; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 20px rgba(45, 90, 138, 0.4); white-space: nowrap;">
+              📝 서이정
+            </button>
+            <button class="mode-chip" data-mode="instagram_post" data-persona="도혜나" onclick="selectMode('instagram_post')" style="flex-shrink: 0; padding: 0.75rem 1.25rem; border-radius: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; opacity: 0.6;">
+              📸 도혜나
+            </button>
+            <button class="mode-chip" data-mode="generate_image_prompt" data-persona="사여별" onclick="selectMode('generate_image_prompt')" style="flex-shrink: 0; padding: 0.75rem 1.25rem; border-radius: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; opacity: 0.6;">
+              🎨 사여별
+            </button>
+            <button class="mode-chip" data-mode="draft_email" data-persona="선혜윤" onclick="selectMode('draft_email')" style="flex-shrink: 0; padding: 0.75rem 1.25rem; border-radius: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; opacity: 0.6;">
+              📧 선혜윤
+            </button>
+            <button class="mode-chip" data-mode="transcribe_audio" data-persona="천다혜" onclick="selectMode('transcribe_audio')" style="flex-shrink: 0; padding: 0.75rem 1.25rem; border-radius: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); font-weight: 500; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; opacity: 0.6;">
+              🎙️ 천다혜
+            </button>
+          </div>
+          <style>
+            #modeChipsContainer::-webkit-scrollbar {
+              display: none;
+            }
+            .mode-chip:hover {
+              opacity: 1 !important;
+              transform: translateY(-2px);
+            }
+            .mode-chip.active {
+              opacity: 1 !important;
+              box-shadow: 0 0 20px rgba(207, 52, 114, 0.4), 0 0 40px rgba(207, 52, 114, 0.2);
+            }
+          </style>
         </div>
-        <textarea 
-          id="createTextInput" 
-          placeholder="무엇을 기록하시겠어요?"
-          style="width: 100%; min-height: 120px; padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; resize: vertical; letter-spacing: -0.02em;"
-        ></textarea>
+        
+        <!-- 모드별 입력 필드 컨테이너 -->
+        <div id="inputFieldsContainer">
+          <!-- 서이정 / 천다혜 (기본) -->
+          <div id="inputField-noteContent" class="input-field-group">
+            <textarea 
+              id="createTextInput-noteContent" 
+              placeholder="어떤 사유를 하고 계신가요?"
+              style="width: 100%; min-height: 120px; padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; resize: vertical; letter-spacing: -0.02em;"
+            ></textarea>
+          </div>
+          
+          <!-- 도혜나 -->
+          <div id="inputField-imageContext" class="input-field-group" style="display: none;">
+            <textarea 
+              id="createTextInput-imageContext" 
+              placeholder="어떤 사진을 올릴까요?"
+              style="width: 100%; min-height: 120px; padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; resize: vertical; letter-spacing: -0.02em;"
+            ></textarea>
+          </div>
+          
+          <!-- 사여별 -->
+          <div id="inputField-inspiration" class="input-field-group" style="display: none;">
+            <textarea 
+              id="createTextInput-inspiration" 
+              placeholder="어떤 비주얼을 만들고 싶으신가요?"
+              style="width: 100%; min-height: 120px; padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; resize: vertical; letter-spacing: -0.02em;"
+            ></textarea>
+          </div>
+          
+          <!-- 선혜윤 -->
+          <div id="inputField-email" class="input-field-group" style="display: none;">
+            <input 
+              type="text" 
+              id="createTextInput-recipient" 
+              placeholder="누구에게 메일을 보낼까요?"
+              style="width: 100%; padding: 1rem; margin-bottom: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; letter-spacing: -0.02em;"
+            />
+            <textarea 
+              id="createTextInput-emailContext" 
+              placeholder="어떤 용건인가요?"
+              style="width: 100%; min-height: 100px; padding: 1rem; margin-bottom: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; resize: vertical; letter-spacing: -0.02em;"
+            ></textarea>
+            <input 
+              type="text" 
+              id="createTextInput-tone" 
+              placeholder="어떤 톤으로 작성할까요? (예: 정중하게, 친근하게)"
+              style="width: 100%; padding: 1rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); font-family: inherit; font-size: 1rem; letter-spacing: -0.02em;"
+            />
+          </div>
+        </div>
         <div style="display: flex; gap: 1rem; margin-top: 1rem;">
           <button onclick="handleVoiceInput()" style="flex: 1; padding: 0.75rem; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-light); cursor: pointer; transition: all 0.2s ease;">
             🎤 음성
@@ -2136,8 +2206,21 @@
       const modal = document.getElementById('createModal');
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      
+      // 기본 모드 선택 (Smart Memo)
+      selectMode('save_note');
+      
       setTimeout(() => {
-        document.getElementById('createTextInput').focus();
+        // 현재 모드에 맞는 입력 필드에 포커스
+        if (currentMode === 'save_note' || currentMode === 'transcribe_audio') {
+          document.getElementById('createTextInput-noteContent')?.focus();
+        } else if (currentMode === 'instagram_post') {
+          document.getElementById('createTextInput-imageContext')?.focus();
+        } else if (currentMode === 'generate_image_prompt') {
+          document.getElementById('createTextInput-inspiration')?.focus();
+        } else if (currentMode === 'draft_email') {
+          document.getElementById('createTextInput-recipient')?.focus();
+        }
       }, 300);
     }
 
@@ -2145,7 +2228,12 @@
       const modal = document.getElementById('createModal');
       modal.classList.remove('active');
       document.body.style.overflow = '';
-      document.getElementById('createTextInput').value = '';
+      // 모든 입력창 초기화
+      document.querySelectorAll('textarea, input[type="text"]').forEach(input => {
+        if (input.id && input.id.startsWith('createTextInput')) {
+          input.value = '';
+        }
+      });
     }
 
     function handleVoiceInput() {
@@ -2163,19 +2251,34 @@
         const reader = new FileReader();
         reader.onload = async (event) => {
           const imageData = event.target.result;
-          const text = document.getElementById('createTextInput').value;
+          
+          // 현재 모드에 맞는 텍스트 필드에서 값 가져오기
+          let text = '';
+          if (currentMode === 'save_note' || currentMode === 'transcribe_audio') {
+            text = document.getElementById('createTextInput-noteContent')?.value || '';
+          } else if (currentMode === 'instagram_post') {
+            text = document.getElementById('createTextInput-imageContext')?.value || '';
+          } else if (currentMode === 'generate_image_prompt') {
+            text = document.getElementById('createTextInput-inspiration')?.value || '';
+          }
 
-          // Send to n8n webhook (이미지 첨부는 image_prompt로 처리)
-          const selectedActionType = document.getElementById('createActionType')?.value || 'image_prompt';
-          const result = await sendToN8N({
-            actionType: selectedActionType,
-            content: text,
-            image: imageData,
-            imageName: file.name,
-            persona: currentPersona || 'default',
-            timestamp: new Date().toISOString(),
-            source: 'create_modal_image'
-          });
+          // 모드별로 데이터 구성
+          let requestData = {
+            actionType: currentMode,
+            data: imageData,
+            imageName: file.name
+          };
+
+          // 모드별 필드 추가
+          if (currentMode === 'instagram_post' && text) {
+            requestData.imageContext = text;
+          } else if (currentMode === 'generate_image_prompt' && text) {
+            requestData.inspiration = text;
+          } else if (text) {
+            requestData.noteContent = text;
+          }
+
+          const result = await sendToN8N(requestData);
 
           if (result.success) {
             alert('이미지와 메시지가 전송되었습니다!');
@@ -2191,6 +2294,94 @@
 
     // n8n Webhook URL (프록시를 통해 호출)
     const PROXY_API_URL = '/api/proxy';
+
+    // 현재 선택된 작업 모드 (기본값: save_note)
+    let currentMode = 'save_note';
+
+    // 페르소나별 컬러 정의
+    const personaColors = {
+      '서이정': {
+        gradient: 'linear-gradient(135deg, #1e3a5f, #2d5a8a)',
+        border: '#2d5a8a',
+        glow: 'rgba(45, 90, 138, 0.4)'
+      },
+      '도혜나': {
+        gradient: 'linear-gradient(135deg, #ff6b9d, #ff8fab)',
+        border: '#ff6b9d',
+        glow: 'rgba(255, 107, 157, 0.4)'
+      },
+      '사여별': {
+        gradient: 'linear-gradient(135deg, #9b59b6, #bb8fce)',
+        border: '#9b59b6',
+        glow: 'rgba(155, 89, 182, 0.4)'
+      },
+      '선혜윤': {
+        gradient: 'linear-gradient(135deg, #3498db, #5dade2)',
+        border: '#3498db',
+        glow: 'rgba(52, 152, 219, 0.4)'
+      },
+      '천다혜': {
+        gradient: 'linear-gradient(135deg, #f39c12, #f7dc6f)',
+        border: '#f39c12',
+        glow: 'rgba(243, 156, 18, 0.4)'
+      }
+    };
+
+    // 모드 선택 함수
+    function selectMode(mode) {
+      currentMode = mode;
+      
+      // 모든 칩 버튼에서 active 클래스 제거 및 스타일 초기화
+      document.querySelectorAll('.mode-chip').forEach(chip => {
+        chip.classList.remove('active');
+        chip.style.background = 'rgba(255, 255, 255, 0.05)';
+        chip.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+        chip.style.color = 'var(--text-muted)';
+        chip.style.fontWeight = '500';
+        chip.style.opacity = '0.6';
+        chip.style.boxShadow = 'none';
+      });
+
+      // 선택된 칩 버튼에 active 스타일 적용 (페르소나별 컬러)
+      const selectedChip = document.querySelector(`.mode-chip[data-mode="${mode}"]`);
+      if (selectedChip) {
+        const persona = selectedChip.getAttribute('data-persona');
+        const colors = personaColors[persona] || personaColors['서이정'];
+        
+        selectedChip.classList.add('active');
+        selectedChip.style.background = colors.gradient;
+        selectedChip.style.border = `1px solid ${colors.border}`;
+        selectedChip.style.color = 'white';
+        selectedChip.style.fontWeight = '600';
+        selectedChip.style.opacity = '1';
+        selectedChip.style.boxShadow = `0 0 20px ${colors.glow}`;
+      }
+
+      // 모드별 입력 필드 표시/숨김
+      document.querySelectorAll('.input-field-group').forEach(group => {
+        group.style.display = 'none';
+      });
+
+      // 모드에 맞는 입력 필드 표시 및 Placeholder 업데이트
+      if (mode === 'save_note') {
+        document.getElementById('inputField-noteContent').style.display = 'block';
+        document.getElementById('createTextInput-noteContent').placeholder = '어떤 사유를 하고 계신가요?';
+      } else if (mode === 'transcribe_audio') {
+        document.getElementById('inputField-noteContent').style.display = 'block';
+        document.getElementById('createTextInput-noteContent').placeholder = '회의록이나 음성 기록을 입력해주세요.';
+      } else if (mode === 'instagram_post') {
+        document.getElementById('inputField-imageContext').style.display = 'block';
+        document.getElementById('createTextInput-imageContext').placeholder = '어떤 사진을 올릴까요?';
+      } else if (mode === 'generate_image_prompt') {
+        document.getElementById('inputField-inspiration').style.display = 'block';
+        document.getElementById('createTextInput-inspiration').placeholder = '어떤 비주얼을 만들고 싶으신가요?';
+      } else if (mode === 'draft_email') {
+        document.getElementById('inputField-email').style.display = 'block';
+        document.getElementById('createTextInput-recipient').placeholder = '누구에게 메일을 보낼까요?';
+        document.getElementById('createTextInput-emailContext').placeholder = '어떤 용건인가요?';
+        document.getElementById('createTextInput-tone').placeholder = '어떤 톤으로 작성할까요? (예: 정중하게, 친근하게)';
+      }
+    }
 
     async function sendToN8N(data) {
       try {
@@ -2231,14 +2422,14 @@
       submitSpinner.style.display = 'inline-block';
 
       try {
-        // 프록시 API를 통해 n8n 웹훅으로 전송 (테스트용: 무조건 instagram_post)
+        // 프록시 API를 통해 n8n 웹훅으로 전송 (선택된 모드에 따라 actionType 설정)
         const response = await fetch(PROXY_API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            actionType: 'instagram_post',
+            actionType: currentMode,
             content: text
           })
         });
@@ -2254,7 +2445,11 @@
           closeCreateModal();
           
           // 입력창 초기화
-          document.getElementById('createTextInput').value = '';
+          document.querySelectorAll('textarea, input[type="text"]').forEach(input => {
+            if (input.id && input.id.startsWith('createTextInput')) {
+              input.value = '';
+            }
+          });
           
           // 홈 페이지가 활성화되어 있으면 최근 활동 업데이트를 위해 새로고침
           if (document.getElementById('page-home').classList.contains('active')) {
